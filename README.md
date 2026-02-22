@@ -26,4 +26,6 @@ An application created to practice JavaScript for the frontend, with plans to us
 - **Frontend:** JavaScript, HTML, CSS  
 - **Backend (planned):** Java Spring Boot  
 - **Database (planned):** PostgreSQL  
-- **Deployment:** GitHub Pages (frontend), Render (backend)
+- **Deployment for demo:** GitHub Pages (frontend)
+
+https://tsuhaohsu.github.io/Spring-Web-App/
