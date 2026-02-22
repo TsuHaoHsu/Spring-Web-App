@@ -1,15 +1,29 @@
-An application created to practice javascript, uses javascript as frontend and plans to use Java Spring Boot as backend
+# Spring Web App
 
-Current feature:
+An application created to practice JavaScript for the frontend, with plans to use **Java Spring Boot** for the backend.
 
-Note:
-Auto saves after any user text input into the note with "Untitled Note" as default name
-Github deployed so it currently saves in the browser storage and will be gone after browser restarts.
-Can switch between notes using the note's title in the sidebar.
-Can delete note using dropdown menu in the sidebar.
-Can edit note name using dropdown menu in the sidebar.
+---
 
-WIP:
-Java Spring boot backend to connect to Postgre SQL to store notes.
-User login with account to store notes privately.
-More features other than notepad like message between 2 users.
+## Current Features
+
+### Note
+- Auto-saves after any user text input into the note, with **"Untitled Note"** as the default name.  
+- Currently deployed on GitHub, so notes are saved in **browser storage** and will be lost after browser restarts.  
+- Can switch between notes using the note's title in the sidebar.  
+- Can delete a note using the dropdown menu in the sidebar.  
+- Can edit a note's name using the dropdown menu in the sidebar.
+
+---
+
+## Work in Progress (WIP)
+- Backend using **Java Spring Boot** connected to **PostgreSQL** to store notes persistently.  
+- User login system to store notes privately per account.  
+- Additional features beyond a simple notepad, such as messaging between users.
+
+---
+
+## Tech Stack
+- **Frontend:** JavaScript, HTML, CSS  
+- **Backend (planned):** Java Spring Boot  
+- **Database (planned):** PostgreSQL  
+- **Deployment:** GitHub Pages (frontend), Render (backend)
