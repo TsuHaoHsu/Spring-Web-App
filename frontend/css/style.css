@@ -1,0 +1,140 @@
+body{
+    /* background-image: url(../assets/bg.jpg); */
+    background-color: #212121;
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 20px;
+    color: #fff; /* default text color on dark bg */
+}
+
+#start-table{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.side-panel{
+    position:fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 200px;
+    background-color: #181818;
+    color: white;
+
+    transform: translateX(-200px);
+    transition: transform 0.3s ease;
+}
+
+.side-panel.open{
+    transform: translateX(0);
+}
+
+.panel-tab{
+    position: absolute;
+    right: -30px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    background: #444;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 0 8px 8px 0;
+    text-align: center;
+}
+/* Content padding */
+.panel-content {
+    padding: 20px;
+    /* margin: 20px; */
+}
+
+/* new note on the side panel */
+#newNote{
+    cursor:pointer;
+    user-select: none;
+}
+
+/* Note list on the side panel */
+#noteContent {
+    height: 50vh;
+    width: 30vw;
+    background-color: rgb(248, 248, 143);
+    border-radius: 8px;
+    padding: 7px;
+}
+
+#notesToggle{
+    cursor: pointer;
+    user-select: none;
+}
+
+#notesList{
+    list-style-type: none;
+    padding: 0;            /* remove default padding */
+    margin: 0;             /* remove default margin */
+}
+
+/* each item on the note list*/
+.note-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.note-item:hover{
+    background-color: #585454;
+}
+
+.note-item:hover .menu-btn{
+    opacity: 1;
+}
+
+.menu-btn{
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+
+.dropdown{
+    display: none;
+    position: absolute;
+    right: -10px;
+    top: 25px;
+    border: 1px solid;
+    z-index: 1000;
+}
+
+.dropdown.show{
+    display: block;
+    background-color: #786d6d;
+}
+
+
+.hidden{
+    display: none;
+}
+
+#notesList li.active-note,
+#newNote.active-note{
+    background-color: #3d3939;
+    /* border-left: 4px solid #00bcd4; */
+}
+
+.truncate{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;   /* fill parent container */
+    display: block;
+}

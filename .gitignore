@@ -1,0 +1,45 @@
+# ======================
+# Backend (Java / Spring Boot)
+# ======================
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# ======================
+# Frontend (Node / JS)
+# ======================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Eclipse / STS
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+backend/nbproject/private/
+backend/nbbuild/
+backend/dist/
+backend/nbdist/
+backend/.nb-gradle/
+backend/build/
+
+### VS Code ###
+.vscode/
+
+# ======================
+# OS / Misc
+# ======================
+.DS_Store
+Thumbs.db
+*.log
