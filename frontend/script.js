@@ -1,5 +1,6 @@
 //Global Variable
 const API_URL = 'http://localhost:8080/api/notes';
+const STORAGE_KEY = "spring_web_notes";
 let currentNoteId = null;
 let currentNote = null;
 let autoSaveTimer = null;
@@ -8,20 +9,40 @@ let isSaving = false;
 //load notes at the start
 document.addEventListener('DOMContentLoaded', loadNotes);
 
+function getLocalNotes() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+}
 
-// Function to load notes from the API and display them in the DOM
-function loadNotes() {
-    //Fetch notes from the API
-    fetch(API_URL)
-        //Convert the response to JSON
-        .then(response => response.json())
-        //Modify the notes list in the DOM
-        .then(notes => {
-            // Get the notes list element
+function saveLocalNotes(notes) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+}
+
+// Function to load notes from the API/Localstorage and display them in the DOM
+async function loadNotes() {
+    let notes = [];
+
+    try{
+    //Await fetch notes from backend API if available
+        const response = await(fetch(API_URL))
+        
+        if(!response.ok){
+            throw new Error("Backend not available");
+        }
+        notes = await response.json();
+        console.log("Loaded from backend");
+    }catch(error){
+        console.log("Backend failed, loading from localStorage");
+        notes = getLocalNotes();
+    }
+
+    renderNotes(notes);
+}
+
+function renderNotes(notes){
+
             const notesList = document.getElementById('notesList');
-            // Clear the existing notes list
             notesList.innerHTML = '';
-            // Loop through the notes and create list items for each note
             notes.forEach(note => {
                 const li = document.createElement('li');
                 li.classList.add('note-item');
@@ -62,7 +83,7 @@ function loadNotes() {
                 dropDown.querySelector('.edit-item').addEventListener('click',(e)=>{
                     e.stopPropagation();
 
-                    dropDown.classList.remove('show');  // ✅ close immediately
+                    dropDown.classList.remove('show');
                     const currentTitleElement = li.querySelector('span');
                     enableRename(currentTitleElement,note);
                 })
@@ -87,7 +108,6 @@ function loadNotes() {
 
                 notesList.appendChild(li);
             });
-        });
 }
 
 //Event listener for dropdown menu
@@ -124,18 +144,15 @@ function enableRename(titleElement, note){
         }
 
         const newTitle = input.value.trim() || "Untitled new note";
-        note.title = newTitle;
 
         if(currentNoteId === note.id){
-            currentNote.title = note.title;
+            currentNote.title = newTitle;
         }
 
         //Create new span to swap back again
         const span = document.createElement('span');
         span.textContent = newTitle;
         span.classList.add('truncate');
-        // span.addEventListener('click', () => enableRename(span,note));
-
         input.replaceWith(span);
 
         fetch(`${API_URL}/${note.id}`,{
@@ -143,10 +160,9 @@ function enableRename(titleElement, note){
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 title: newTitle,
-                content: content
+                content: note.content || ""
             })
-        });
-
+        }).then(() => loadNotes());
     }
 }
 
@@ -185,14 +201,23 @@ function createTitleSpan(text){
 //Edit button for each note in notes list
 function loadIntoNoteEditor(note) {
     fetch(`${API_URL}/${note.id}`)
-        .then(response => response.json())
+        .then(response => {
+            if(!response.ok) throw new Error();
+            return response.json()})
         .then(note => {
-            // document.getElementById("noteTitle").value = note.title;
             document.getElementById("noteContent").value = note.content;
-
             currentNoteId = note.id;
             currentNote = note;
-        })
+        }).catch(() => {
+            //local storage fallback
+            const notes = getLocalNotes();
+            const foundNote = notes.find(n => n.id === note.id);
+            if(foundNote){
+                document.getElementById("noteContent").value = foundNote.content;
+                currentNoteId = foundNote.id;
+                currentNote = foundNote;
+            }
+        });
 }
 
 function highlightSelected(selectedElement) {
@@ -207,11 +232,11 @@ function highlightSelected(selectedElement) {
 document.getElementById('newNote').addEventListener('click', newNotes);
 
 function newNotes(){
-    document.getElementById("noteContent").value = "";
+    clearTimeout(autoSaveTimer); // Stop pending saves
+    contentInput.value = "";     // Clear the editor
     currentNoteId = null;
     currentNote = null;
-    newNoteElement = document.getElementById("newNote");
-    highlightSelected(newNoteElement);
+    highlightSelected(document.getElementById("newNote"));
 }
 //<------------------------------------------------>
 
@@ -270,66 +295,95 @@ function triggerAutoSave(){
 
 contentInput.addEventListener("input",triggerAutoSave)
 
-function saveNote(){
-
-    //prevent duplicate saving
-    if(isSaving)
+async function saveNote() {
+    if (isSaving) {
+        triggerAutoSave(); 
         return;
+    }
+
+    const content = contentInput.value.trim();
+    if (currentNoteId === null && content === "") return;
+
     isSaving = true;
+    
+    const isNewNote = (currentNoteId === null);
+    let finalTitle = currentNote?.title || "Untitled new note";
 
-    const content = contentInput.value;
+    if (isNewNote && content.length > 0) {
+        const lines = content.split('\n');
+        if (lines[0].trim().length > 0) {
+            finalTitle = lines[0].substring(0, 30); // Use first 30 chars
+        }
+    }
 
-    // Use the existing note's title if editing, or default for new note
-    let finalTitle;
+    const notePayload = {
+        title: finalTitle,
+        content: contentInput.value
+    };
 
-    if (currentNoteId === null) {
-        // New note → default to "Untitled new note" if no title
-        finalTitle = currentNote?.title?.trim() || "Untitled new note";
+    try {
+        let response;
+        if (isNewNote) {
+            response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(notePayload)
+            });
+        } else {
+            response = await fetch(`${API_URL}/${currentNoteId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...notePayload, id: currentNoteId })
+            });
+        }
+
+        if (response.ok) {
+            const savedNote = await response.json();
+            
+            currentNoteId = savedNote.id;
+            currentNote = savedNote;
+
+            // Only refresh the sidebar list if it's a brand new note
+            if (isNewNote) {
+                await loadNotes();
+            }
+        } else {
+            throw new Error(`Backend Error: ${await response.text()}`);
+        }
+    } catch (error) {
+        console.error("Backend failed, saving to local storage", error);
+        handleLocalFallback(isNewNote, finalTitle, content);
+    } finally {
+        isSaving = false;
+    }
+}
+
+function handleLocalFallback(isNewNote, title, content) {
+    let notes = getLocalNotes();
+
+    if (isNewNote && currentNoteId === null) {
+        currentNoteId = Date.now(); 
+        currentNote = { id: currentNoteId, title: title, content: content };
+    }
+
+    const localPayload = {
+        id: currentNoteId,
+        title: title,
+        content: content
+    };
+
+    const index = notes.findIndex(n => n.id === currentNoteId);
+    if (index >= 0) {
+        notes[index] = localPayload;
     } else {
-        // Existing note → take the title from the note object
-        finalTitle = currentNote.title;
+        notes.push(localPayload);
     }
 
-    if(currentNoteId===null){
-
-        fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            // assign 
-            body: JSON.stringify({
-                title: finalTitle,
-                content
-            })
-        })
-        .then(response => response.json())
-        .then(newNote => {
-            currentNoteId = newNote.id;
-            loadNotes();
-        }).finally(()=>{
-            isSaving = false;
-        })
-    }
-    else{
-        fetch(`${API_URL}/${currentNoteId}`,{
-            method: "PUT",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({
-                title: finalTitle,
-                content
-            })
-        })
-        .then(response=>response.json())
-        .then(updatedNote => {
-            console.log("Note updated");
-            // loadNotes();
-        })
-        .finally(()=>{
-            isSaving = false;
-        });
+    saveLocalNotes(notes);
+    
+    // Only refresh the sidebar list if it's a brand new note
+    if (isNewNote) {
+        renderNotes(notes);
     }
 }
 //<------------------------------------------------>
