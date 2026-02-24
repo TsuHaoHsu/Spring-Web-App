@@ -137,3 +137,22 @@ body{
     max-width: 80%;   /* fill parent container */
     display: block;
 }
+
+#statusIndicator{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #333;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+#statusIndicator.active{
+    opacity: 1;
+}

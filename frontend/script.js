@@ -24,13 +24,16 @@ async function loadNotes() {
 
     try{
     //Await fetch notes from backend API if available
-        const response = await(fetch(API_URL))
+        const response = await(fetch(API_URL));
         
         if(!response.ok){
             throw new Error("Backend not available");
         }
         notes = await response.json();
         console.log("Loaded from backend");
+
+        saveLocalNotes(notes);
+
     }catch(error){
         console.log("Backend failed, loading from localStorage");
         notes = getLocalNotes();
@@ -90,6 +93,8 @@ function renderNotes(notes){
                 
                 dropDown.querySelector('.delete-item').addEventListener('click',(e)=>{
                     e.stopPropagation();
+
+                    dropDown.classList.remove('show');
                     deleteNotes(note.id);
                 })
 
@@ -155,6 +160,8 @@ function enableRename(titleElement, note){
         span.classList.add('truncate');
         input.replaceWith(span);
 
+        showStatus("Saving title...");
+
         fetch(`${API_URL}/${note.id}`,{
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
@@ -162,7 +169,22 @@ function enableRename(titleElement, note){
                 title: newTitle,
                 content: note.content || ""
             })
-        }).then(() => loadNotes());
+        }).then(() => loadNotes()).catch(() => {
+            console.log("Backend failed, renaming in localStorage");
+            let notes = getLocalNotes();
+            const index = notes.findIndex(n => n.id === note.id);
+
+            if(index !== -1){
+                notes[index].title = newTitle;
+            } else{
+                notes.push({id: note.id, title: newTitle, content: note.content || ""});
+            }
+
+            saveLocalNotes(notes);
+            showStatus("Saved locally!");
+            loadNotes();
+        })
+        .finally(()=> hideStatus());
     }
 }
 
@@ -186,7 +208,15 @@ function saveRename(inputElement, note){
         method: 'PUT',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({title: newTitle})
-    });
+    }).catch(() => {
+        console.log("Backend failed, renaming in localStorage");
+        let notes = getLocalNotes();
+        const index = notes.findIndex(n => n.id === note.id);
+        if (index !== -1) {
+            notes[index].title = newTitle;
+            saveLocalNotes(notes);
+        }
+    })
 }
 
 //swap rename textbox with text selection again
@@ -241,10 +271,40 @@ function newNotes(){
 //<------------------------------------------------>
 
 function deleteNotes(id) {
+    showStatus("Deleting...");
+
+    const noteElement = document.querySelector(`li[data-id="${id}"]`);
+    if(noteElement){
+        noteElement.remove();
+    }
+
+if(currentNoteId == id){
+    document.getElementById("noteContent").value = "";
+    currentNoteId = null;
+    currentNote = null;
+}
+
     fetch(`${API_URL}/${id}`, {
         method: 'DELETE'
     })
-    .then(() => loadNotes());
+    .then(response => {
+        if(!response.ok){
+            throw new Error("Backend delete failed");
+        }
+        showStatus("Deleted!");
+    })
+    .catch(() => {
+        console.log("Backend offline or failed, deleting from localStorage");
+        let notes = getLocalNotes();
+        notes = notes.filter(n => n.id != id);
+        saveLocalNotes(notes);
+        showStatus("Deleted Locally!");
+    })
+    .finally(()=>{
+        loadNotes();
+        hideStatus();
+    });
+
 }
 //<------------------------------------------------>
 
@@ -305,6 +365,7 @@ async function saveNote() {
     if (currentNoteId === null && content === "") return;
 
     isSaving = true;
+    showStatus("Saving...");
     
     const isNewNote = (currentNoteId === null);
     let finalTitle = currentNote?.title || "Untitled new note";
@@ -312,7 +373,7 @@ async function saveNote() {
     if (isNewNote && content.length > 0) {
         const lines = content.split('\n');
         if (lines[0].trim().length > 0) {
-            finalTitle = lines[0].substring(0, 30); // Use first 30 chars
+            finalTitle = lines[0].substring(0, 30); // Use first 30 chars as title
         }
     }
 
@@ -347,6 +408,7 @@ async function saveNote() {
             if (isNewNote) {
                 await loadNotes();
             }
+            showStatus("Saved!");
         } else {
             throw new Error(`Backend Error: ${await response.text()}`);
         }
@@ -355,6 +417,7 @@ async function saveNote() {
         handleLocalFallback(isNewNote, finalTitle, content);
     } finally {
         isSaving = false;
+        hideStatus();
     }
 }
 
@@ -381,9 +444,20 @@ function handleLocalFallback(isNewNote, title, content) {
 
     saveLocalNotes(notes);
     
-    // Only refresh the sidebar list if it's a brand new note
     if (isNewNote) {
         renderNotes(notes);
     }
+}
+//<------------------------------------------------>
+
+function showStatus(message){
+    document.getElementById("statusIndicator").textContent = message;
+    document.getElementById("statusIndicator").classList.add("active");
+}
+
+function hideStatus(delay = 1000){
+    setTimeout(() => {
+        document.getElementById("statusIndicator").classList.remove("active");
+    }, delay);
 }
 //<------------------------------------------------>
