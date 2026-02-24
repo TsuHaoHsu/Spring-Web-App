@@ -28,8 +28,8 @@ An application created to practice JavaScript for the frontend, with plans to us
 - **Database (planned):** PostgreSQL  
 - **Deployment for demo:** GitHub Pages (frontend)
 
-Website link to try it out
-##https://tsuhaohsu.github.io/Spring-Web-App/##
+## Website link to try it out
+https://tsuhaohsu.github.io/Spring-Web-App/
 
 Update log:
 25/02/2026 - Completed local storage fallback and added message indicator on bottom right.
