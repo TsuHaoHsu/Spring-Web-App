@@ -1,58 +1,45 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <title>Spring Note</title>
     <!-- Link CSS -->
     <link rel="stylesheet" href="./css/style.css">
-
     <!-- Favicon-->
      <link rel="icon" type="image/png" href="./assets/note.ico">
 </head>
-
-</html>
 
 <body>
     <div id="sidePanel" class="side-panel">
         <div class="panel-tab" id="panelToggle">☰</div>
         <div class="panel-content">
-
-            <!-- <button id="newButton">New Note</button> -->
-            <div id="newNote" class="note-item"><H3>New Note</H3></div>
-
+            <div id="newBoardBtn" class="board-item" style="color: #00bcd4; cursor: pointer;">
+                <h3>+ New Board</h3>
+            </div>
             <hr>
-            <h3 id="notesToggle">Your notes ▲</h3>
-
-            <ul id="notesList"></ul>
+            <h3 id="boardListToggle" style="cursor: pointer;">Your boards ▲</h3>
+            <ul id="boardList"></ul>
         </div>
     </div>
 
     <div id="statusIndicator"></div>
 
-    <h1>Spring Note</h1>
-
-    <h3>Welcome to our Spring Note application!</h3>
+    <header>
+        <h1>Spring Note</h1>
+        <p>Welcome to your digital bulletin board!</p>
+    </header>
 
     <hr>
 
-    <table id="start-table">
-        <tr>
-            <!-- <td>
-                <input type="text" id="noteTitle" placeholder="Enter note title">
-            </td> -->
-        </tr>
-        <tr>
-            <td>
-                <textarea id="noteContent" placeholder="Enter your note here" rows="5"></textarea>
-            </td>
-        </tr>
-        <tr>
-        </tr>
-    </table>
+    <div id="bulletinBoard" class="board-canvas">
+        </div>
 
 
+    <div id="boardContextMenu" class="dropdown" style="position: fixed; display: none;">
+        <div class="dropdown-item" id="ctxAddNote">Add Note</div>
+    </div>
 
     <script src="./script.js"></script>
 
 </body>
-
 </html>

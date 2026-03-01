@@ -6,11 +6,6 @@ body{
     color: #fff; /* default text color on dark bg */
 }
 
-#start-table{
-    margin-left: auto;
-    margin-right: auto;
-}
-
 
 .side-panel{
     position:fixed;
@@ -23,6 +18,9 @@ body{
 
     transform: translateX(-200px);
     transition: transform 0.3s ease;
+    
+    /* ADD THIS LINE */
+    z-index: 1000;
 }
 
 .side-panel.open{
@@ -43,6 +41,7 @@ body{
     cursor: pointer;
     border-radius: 0 8px 8px 0;
     text-align: center;
+    z-index: 1001;
 }
 /* Content padding */
 .panel-content {
@@ -54,15 +53,6 @@ body{
 #newNote{
     cursor:pointer;
     user-select: none;
-}
-
-/* Note list on the side panel */
-#noteContent {
-    height: 50vh;
-    width: 30vw;
-    background-color: rgb(248, 248, 143);
-    border-radius: 8px;
-    padding: 7px;
 }
 
 #notesToggle{
@@ -77,7 +67,7 @@ body{
 }
 
 /* each item on the note list*/
-.note-item{
+.board-item{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -86,12 +76,23 @@ body{
     padding: 5px;
 }
 
-.note-item:hover{
+.board-item:hover{
     background-color: #585454;
+    cursor: pointer;
 }
 
-.note-item:hover .menu-btn{
+.board-item:hover .menu-btn{
     opacity: 1;
+}
+
+.board-item:hover .dropdown-item:hover{
+    
+    background-color: #00bcd4; /* Your accent color */
+}
+
+.board-item.active-note {
+    background-color: #3d3d3d; /* Or your preferred highlight color */
+    border-left: 4px solid #00bcd4;
 }
 
 .menu-btn{
@@ -105,13 +106,17 @@ body{
 }
 
 
-.dropdown{
+.dropdown {
     display: none;
     position: absolute;
-    right: -10px;
-    top: 25px;
-    border: 1px solid;
+    right: 5px;
+    top: 30px;
+    background-color: #444; /* Give it a solid background */
+    border: 1px solid #555;
     z-index: 1000;
+    min-width: 120px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .dropdown.show{
@@ -134,8 +139,8 @@ body{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 80%;   /* fill parent container */
-    display: block;
+    max-width: 140px;   /* fill parent container */
+    display: inline-block;
 }
 
 #statusIndicator{
@@ -155,4 +160,123 @@ body{
 
 #statusIndicator.active{
     opacity: 1;
+}
+
+/* --- Bulletin Board Canvas --- */
+#bulletinBoard {
+    width: 100%;
+    height: 80vh; /* Gives the board plenty of room */
+    position: relative;
+    background-image: radial-gradient(#444 1px, transparent 1px); /* Subtle dark grid */
+    background-size: 30px 30px;
+    background-color: #212121;
+    border: 2px dashed #444;
+    margin-top: 20px;
+    overflow: hidden; /* Prevents notes from causing page scroll */
+    border-radius: 8px;
+}
+
+/* --- The Sticky Note --- */
+.sticky-note {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    min-width: 150px;
+    min-height: 100px;
+    max-width: 500px;
+    max-height: 500px;
+
+    overflow: hidden;
+    resize: both;
+
+    background-color: #fdfd86; /* Classic sticky yellow */
+    color: #333;
+    padding: 10px;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    border-radius: 2px;
+    transition: transform 0.1s ease;
+    z-index: 10;
+}
+
+.sticky-note:active {
+    cursor: grabbing;
+    transform: scale(1.02); /* Slight pop when picking up */
+    z-index: 1000; /* Bring to front while dragging */
+}
+
+/* --- Drag Handle (The dots at the top) --- */
+.drag-handle {
+    cursor: grab;
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    user-select: none;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+/* --- Sticky Note Textarea --- */
+.sticky-note textarea {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    resize: none;
+    outline: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+/* --- Delete Button (X) on Sticky --- */
+.delete-sticky {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    cursor: pointer;
+    color: #cc0000;
+    font-weight: bold;
+    opacity: 0.3;
+}
+
+.sticky-note:hover .delete-sticky {
+    opacity: 1;
+}
+
+/* --- Sidebar Rename Input --- */
+.rename-input {
+    background: #444;
+    color: white;
+    border: 1px solid #00bcd4;
+    padding: 2px 5px;
+    width: 80%;
+}
+
+/* Specific override for the Board Context Menu */
+#boardContextMenu {
+    position: fixed;        /* Important: Uses screen coordinates */
+    left: 0;               /* Reset inherited positions */
+    top: 0;                /* Reset inherited positions */
+    right: auto;           /* Kill the 'right: 5px' from .dropdown */
+    min-width: 120px;
+    width: max-content;    /* Only as wide as the text inside */
+    background-color: #2a2a2a; 
+    border: 1px solid #555;
+    padding: 5px 0;
+    z-index: 5000;         /* High z-index to stay above everything */
+}
+
+#boardContextMenu .dropdown-item {
+    padding: 10px 20px;    /* Comfortably clickable but compact */
+    font-size: 14px;
+    color: #fff;
+    white-space: nowrap;   /* Keeps text on one line */
+}
+
+#boardContextMenu .dropdown-item:hover {
+    background-color: #00bcd4; /* Your accent color */
+    color: #fff;
+    cursor: pointer;
 }
