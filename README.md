@@ -1,6 +1,6 @@
 # Spring Web App
 
-An application created to practice JavaScript for the frontend, with plans to use **Java Spring Boot** for the backend.
+An application created to practice JavaScript for the frontend, with C# for the backend.
 
 ---
 
@@ -19,7 +19,6 @@ An application created to practice JavaScript for the frontend, with plans to us
 ---
 
 ## Work in Progress (WIP)
-- Backend using **Java Spring Boot** connected to **PostgreSQL** to store notes persistently. 
 - User login system to store notes privately per account.  
 - Additional features beyond a simple notepad, such as messaging between users.
 
@@ -27,9 +26,9 @@ An application created to practice JavaScript for the frontend, with plans to us
 
 ## Tech Stack
 - **Frontend:** JavaScript, HTML, CSS  
-- **Backend (planned):** Java Spring Boot  
-- **Database (planned):** PostgreSQL  
-- **Deployment for demo:** GitHub Pages (frontend)
+- **Backend:** C#
+- **Database:** SQL Lite (demo uses localStorage)
+- **Deployment for demo:** GitHub Pages (frontend with localStorage)
 
 ## Website link to try it out
 https://tsuhaohsu.github.io/Spring-Web-App/
@@ -37,3 +36,4 @@ https://tsuhaohsu.github.io/Spring-Web-App/
 Update log:
 02/25/2026 - Completed local storage fallback and added message indicator on bottom right.
 02/03/2026 - Swapped to bulletin board style instead of just one notes per page.
+03/29/2026 - Backend changed to use C# MVC with Entity Framework, database now uses SQL lite.
