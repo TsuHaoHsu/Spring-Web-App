@@ -3,7 +3,7 @@ body{
     background-size: cover;
     background-repeat: no-repeat;
     padding: 20px;
-    color: #fff; /* default text color on dark bg */
+    color: #fff;
 }
 
 
@@ -19,7 +19,6 @@ body{
     transform: translateX(-200px);
     transition: transform 0.3s ease;
     
-    /* ADD THIS LINE */
     z-index: 1000;
 }
 
@@ -43,30 +42,12 @@ body{
     text-align: center;
     z-index: 1001;
 }
-/* Content padding */
+
 .panel-content {
     padding: 20px;
-    /* margin: 20px; */
 }
 
-/* new note on the side panel */
-#newNote{
-    cursor:pointer;
-    user-select: none;
-}
-
-#notesToggle{
-    cursor: pointer;
-    user-select: none;
-}
-
-#notesList{
-    list-style-type: none;
-    padding: 0;            /* remove default padding */
-    margin: 0;             /* remove default margin */
-}
-
-/* each item on the note list*/
+/* each item under the board list*/
 .board-item{
     display: flex;
     justify-content: space-between;
@@ -87,11 +68,11 @@ body{
 
 .board-item:hover .dropdown-item:hover{
     
-    background-color: #00bcd4; /* Your accent color */
+    background-color: #00bcd4;
 }
 
 .board-item.active-note {
-    background-color: #3d3d3d; /* Or your preferred highlight color */
+    background-color: #3d3d3d;
     border-left: 4px solid #00bcd4;
 }
 
@@ -111,7 +92,7 @@ body{
     position: absolute;
     right: 5px;
     top: 30px;
-    background-color: #444; /* Give it a solid background */
+    background-color: #444;
     border: 1px solid #555;
     z-index: 1000;
     min-width: 120px;
@@ -132,14 +113,13 @@ body{
 #notesList li.active-note,
 #newNote.active-note{
     background-color: #3d3939;
-    /* border-left: 4px solid #00bcd4; */
 }
 
 .truncate{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 140px;   /* fill parent container */
+    max-width: 140px;
     display: inline-block;
 }
 
@@ -165,14 +145,14 @@ body{
 /* --- Bulletin Board Canvas --- */
 #bulletinBoard {
     width: 100%;
-    height: 80vh; /* Gives the board plenty of room */
+    height: 80vh;
     position: relative;
-    background-image: radial-gradient(#444 1px, transparent 1px); /* Subtle dark grid */
+    background-image: radial-gradient(#444 1px, transparent 1px);
     background-size: 30px 30px;
     background-color: #212121;
     border: 2px dashed #444;
     margin-top: 20px;
-    overflow: hidden; /* Prevents notes from causing page scroll */
+    overflow: hidden;
     border-radius: 8px;
 }
 
@@ -189,7 +169,7 @@ body{
     overflow: hidden;
     resize: both;
 
-    background-color: #fdfd86; /* Classic sticky yellow */
+    background-color: #fdfd86;
     color: #333;
     padding: 10px;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
@@ -202,8 +182,8 @@ body{
 
 .sticky-note:active {
     cursor: grabbing;
-    transform: scale(1.02); /* Slight pop when picking up */
-    z-index: 1000; /* Bring to front while dragging */
+    transform: scale(1.02);
+    z-index: 1000;
 }
 
 /* --- Drag Handle (The dots at the top) --- */
@@ -254,29 +234,28 @@ body{
     width: 80%;
 }
 
-/* Specific override for the Board Context Menu */
 #boardContextMenu {
-    position: fixed;        /* Important: Uses screen coordinates */
-    left: 0;               /* Reset inherited positions */
-    top: 0;                /* Reset inherited positions */
-    right: auto;           /* Kill the 'right: 5px' from .dropdown */
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: auto;
     min-width: 120px;
-    width: max-content;    /* Only as wide as the text inside */
+    width: max-content;
     background-color: #2a2a2a; 
     border: 1px solid #555;
     padding: 5px 0;
-    z-index: 5000;         /* High z-index to stay above everything */
+    z-index: 5000;
 }
 
 #boardContextMenu .dropdown-item {
-    padding: 10px 20px;    /* Comfortably clickable but compact */
+    padding: 10px 20px;
     font-size: 14px;
     color: #fff;
-    white-space: nowrap;   /* Keeps text on one line */
+    white-space: nowrap;
 }
 
 #boardContextMenu .dropdown-item:hover {
-    background-color: #00bcd4; /* Your accent color */
+    background-color: #00bcd4;
     color: #fff;
     cursor: pointer;
 }

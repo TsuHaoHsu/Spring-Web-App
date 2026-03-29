@@ -1,5 +1,6 @@
 //Global Variable
-const API_URL = 'http://localhost:8080/api/notes';
+// const API_URL = 'http://localhost:8080/api/notes'; C# backend
+const API_URL = 'http://localhost:5179/api/board'; // C# MVC backend
 const STORAGE_KEY = "spring_web_notes";
 let autoSaveTimer = null;
 let currentBoardId = null;
@@ -152,6 +153,7 @@ document.addEventListener('click',(e)=> {
         }
 })
 //<------------------------------------------------>
+
 //For board retraction
 const boardListToggle = document.getElementById('boardListToggle');
 const boardList = document.getElementById('boardList');
@@ -183,15 +185,42 @@ function hideStatus(delay = 1000){
     }, delay);
 }
 //<------------------------------------------------>
+
 //Boards
 async function initializeApp() {
-    const localData = localStorage.getItem(STORAGE_KEY);
-    if(localData){
-        allBoards = JSON.parse(localData);
-        renderSidebar();
-        if (allBoards.length > 0) switchBoard(allBoards[0].id);
+    showStatus("Connecting to server...");
+
+    try {
+        const response = await fetch(API_URL);
+        if(!response.ok) throw new Error("No backend found");
+
+        const backendBoards = await response.json();
+
+        if (backendBoards && backendBoards.length > 0){
+            console.log("Using backend data.");
+            allBoards = backendBoards;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(allBoards));
+        }
+        else {
+            const localData = localStorage.getItem(STORAGE_KEY);
+            if(localData){
+                allBoards = JSON.parse(localData);
+                renderSidebar();
+                if (allBoards.length > 0) switchBoard(allBoards[0].id);
+            }
+            await syncWithBackend();
+        }
+    } catch(error){
+        console.warn("Backend unreachable, falling back to local stroage.");
+        const localData = localStorage.getItem(STORAGE_KEY);
+        if(localData) allBoards = JSON.parse(localData);
     }
-    await syncWithBackend();
+
+    renderSidebar();
+    if (allBoards.length > 0){
+        switchBoard(allBoards[0].id);
+    }
+    hideStatus();
 }
 
 async function syncWithBackend(){
@@ -201,7 +230,6 @@ async function syncWithBackend(){
         if (!response.ok) throw new Error("Server unreachable");
        const backendBoards = await response.json();
         
-        // Simple Sync Logic: Compare the latest timestamp across all boards
         const localTime = Math.max(...allBoards.map(b => b.updatedAt || 0), 0);
         const backendTime = Math.max(...backendBoards.map(b => b.updatedAt || 0), 0);
 
@@ -334,8 +362,8 @@ function renderSidebar(){
         };
         
         li.appendChild(titleSpan);
-        li.appendChild(menuBtn); // Added: Actually put the button in the list
-        li.appendChild(dropDown); // Added: Actually put the dropdown in the list
+        li.appendChild(menuBtn);
+        li.appendChild(dropDown);
         list.appendChild(li);
     });
 }

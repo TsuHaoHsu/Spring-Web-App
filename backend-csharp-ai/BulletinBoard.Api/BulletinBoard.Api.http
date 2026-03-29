@@ -1,0 +1,41 @@
+@BulletinBoard.Api_HostAddress = http://localhost:8080
+
+### Get all boards
+GET {{BulletinBoard.Api_HostAddress}}/api/notes
+Accept: application/json
+
+### Create/Sync boards
+POST {{BulletinBoard.Api_HostAddress}}/api/notes/sync
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "boardName": "Test Board",
+    "notes": [
+      {
+        "id": 1,
+        "content": "Sample note",
+        "x": 100,
+        "y": 100,
+        "width": 200,
+        "height": 200
+      }
+    ],
+    "updatedAt": 1700000000000
+  }
+]
+
+### Update board
+PUT {{BulletinBoard.Api_HostAddress}}/api/notes/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "boardName": "Updated Board",
+  "notes": [],
+  "updatedAt": 1700000000000
+}
+
+### Delete board
+DELETE {{BulletinBoard.Api_HostAddress}}/api/notes/1

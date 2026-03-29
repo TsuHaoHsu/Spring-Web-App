@@ -1,8 +1,55 @@
+bin/
+obj/
+
 # ======================
 # Backend (Java / Spring Boot)
 # ======================
-backend/target/
-backend/.mvn/wrapper/maven-wrapper.jar
+backend-java/target/
+backend-java/.mvn/wrapper/maven-wrapper.jar
+backend-java/.apt_generated
+backend-java/.classpath
+backend-java/.factorypath
+backend-java/.project
+backend-java/.settings
+backend-java/.springBeans
+backend-java/.sts4-cache
+backend-java/nbproject/private/
+backend-java/nbbuild/
+backend-java/dist/
+backend-java/nbdist/
+backend-java/.nb-gradle/
+backend-java/build/
+
+# ======================
+# Backend (C# / .NET)
+# ======================
+backend-csharp/[Bb]in/
+backend-csharp/[Oo]bj/
+backend-csharp/.vs/
+*.exe
+*.dll
+*.pdb
+*.user
+*.suo
+
+# ======================
+# SQLite Database
+# ======================
+*.db
+*.db-shm
+*.db-wal
+
+# ======================
+# IDEs & OS
+# ======================
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+.DS_Store
+Thumbs.db
+*.log
 
 # ======================
 # Frontend (Node / JS)
@@ -33,13 +80,3 @@ backend/dist/
 backend/nbdist/
 backend/.nb-gradle/
 backend/build/
-
-### VS Code ###
-.vscode/
-
-# ======================
-# OS / Misc
-# ======================
-.DS_Store
-Thumbs.db
-*.log
